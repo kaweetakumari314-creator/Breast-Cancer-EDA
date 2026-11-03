@@ -78,7 +78,7 @@ if df is None:
     st.stop()
 
 st.sidebar.caption(f"Loaded {len(df):,} unique patient records" + (f" · {dataset_path.name}" if dataset_path else " · uploaded CSV"))
-if st.sidebar.button("Reset filters", use_container_width=True):
+if st.sidebar.button("Reset filters", width="stretch"):
     st.session_state["age_filter"] = (int(df["Age"].min()), int(df["Age"].max()))
     for key in ["race_filter", "marital_filter", "stage_filter", "grade_filter", "estrogen_filter", "progesterone_filter", "status_filter"]:
         st.session_state[key] = []
@@ -92,7 +92,13 @@ age_range = st.sidebar.slider("Age", age_min, age_max, key="age_filter")
 
 def multi_filter(label, column, key):
     values = sorted(df[column].dropna().astype(str).unique().tolist())
-    return st.sidebar.multiselect(label, values, default=[], key=key, help="Leave empty to include all values.")
+
+    return st.sidebar.multiselect(
+        label,
+        values,
+        key=key,
+        help="Leave empty to include all values."
+    )
 
 races = multi_filter("Race", "Race", "race_filter")
 marital = multi_filter("Marital Status", "Marital Status", "marital_filter")
@@ -118,8 +124,13 @@ page = st.sidebar.radio("Navigate", pages, label_visibility="collapsed")
 
 
 def chart(fig, height=390):
-    fig.update_layout(height=height, margin=dict(l=12, r=12, t=55, b=12), template="plotly_white", font=dict(family="Arial", color="#26364a"))
-    st.plotly_chart(fig, use_container_width=True)
+    fig.update_layout(
+        height=height,
+        margin=dict(l=12, r=12, t=55, b=12),
+        template="plotly_white",
+        font=dict(family="Arial", color="#26364a")
+    )
+    st.plotly_chart(fig, width="stretch")
 
 
 def count_bar(column, title, horizontal=False):
